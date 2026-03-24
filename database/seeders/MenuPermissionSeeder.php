@@ -232,6 +232,18 @@ class MenuPermissionSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'id' => 15,
+                'name' => 'Product Addons',
+                'slug' => 'product-addons',
+                'icon' => 'ri-links-line',
+                'url' => '/admin/product-addons',
+                'parent_id' => 11,
+                'sort_order' => 4,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         // ======================
@@ -324,6 +336,13 @@ class MenuPermissionSeeder extends Seeder
             ['menu_id' => 14, 'permission_id' => $editId],
             ['menu_id' => 14, 'permission_id' => $viewId],
             ['menu_id' => 14, 'permission_id' => $deleteId],
+
+            // Product Addons (One page)
+            ['menu_id' => 15, 'permission_id' => $accessId],
+            ['menu_id' => 15, 'permission_id' => $createId],
+            ['menu_id' => 15, 'permission_id' => $editId],
+            ['menu_id' => 15, 'permission_id' => $viewId],
+            ['menu_id' => 15, 'permission_id' => $deleteId],
         ];
 
         foreach ($menuPermissions as $mp) {

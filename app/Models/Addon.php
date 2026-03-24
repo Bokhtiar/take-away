@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Addon extends Model
@@ -17,5 +18,10 @@ class Addon extends Model
     protected $casts = [
         'price' => 'decimal:2',
     ];
+
+    public function productAddons(): HasMany
+    {
+        return $this->hasMany(ProductAddon::class);
+    }
 }
 

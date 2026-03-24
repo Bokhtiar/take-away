@@ -35,5 +35,10 @@ class Product extends Model
     {
         return $this->hasMany(ProductIngredient::class);
     }
+
+    public function productAddons(): HasMany
+    {
+        return $this->hasMany(ProductAddon::class);
+    }
 }
 

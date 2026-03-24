@@ -95,3 +95,11 @@ Route::resource('addons', \App\Http\Controllers\Admin\AddonController::class)
     ->names('admin.addons')
     ->middleware('admin.check.permission:addons');
 
+/** product addons (one page) */
+Route::get('product-addons', [\App\Http\Controllers\Admin\ProductAddonController::class, 'index'])
+    ->name('admin.product-addons.index')
+    ->middleware('admin.check.permission:product-addons');
+Route::post('product-addons', [\App\Http\Controllers\Admin\ProductAddonController::class, 'store'])
+    ->name('admin.product-addons.store')
+    ->middleware('admin.check.permission:product-addons');
+
