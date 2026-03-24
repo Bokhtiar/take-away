@@ -159,66 +159,37 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="food-card rounded-xl overflow-hidden" data-aos="fade-up">
-                <div class="h-64 overflow-hidden relative group">
-                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                    <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs gold-text border border-gold/30">Chef's Choice</div>
-                </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-xl font-serif">Wild Mushroom Risotto</h3>
-                        <span class="gold-text font-bold">$32.00</span>
+            @forelse($products as $product)
+                @php
+                    $productImage = $product->image_url ?: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800';
+                @endphp
+                <div class="food-card rounded-xl overflow-hidden" data-aos="fade-up">
+                    <div class="h-64 overflow-hidden relative group">
+                        <img src="{{ $productImage }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="{{ $product->name }}">
+                        @if($product->category)
+                            <div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs gold-text border border-gold/30">
+                                {{ $product->category->name }}
+                            </div>
+                        @endif
                     </div>
-                    <div class="flex text-yellow-500 text-xs mb-4">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                        <span class="text-gray-500 ml-2">(124 Reviews)</span>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2 gap-3">
+                            <h3 class="text-xl font-serif">{{ $product->name }}</h3>
+                            <span class="gold-text font-bold">${{ number_format((float) $product->price, 2) }}</span>
+                        </div>
+                        <p class="text-gray-400 text-sm mb-6">{{ \Illuminate\Support\Str::limit($product->description ?: 'A delightful dish curated by our chef.', 120) }}</p>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="openProductModal({{ $product->id }})" class="py-3 bg-white/5 border border-white/10 hover:border-gold transition-all text-xs font-bold uppercase tracking-widest">
+                                Details
+                            </button>
+                        </div>
                     </div>
-                    <p class="text-gray-400 text-sm mb-6">Arborio rice slow-cooked with porcini mushrooms, truffle oil, and aged parmesan cheese.</p>
-                    <button onclick="addToCart('Wild Mushroom Risotto', 32)" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-widest">
-                        <i class="fa-solid fa-cart-plus"></i> Add to Order
-                    </button>
                 </div>
-            </div>
-
-            <div class="food-card rounded-xl overflow-hidden" data-aos="fade-up" data-aos-delay="100">
-                <div class="h-64 overflow-hidden relative group">
-                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+            @empty
+                <div class="col-span-full text-center text-gray-500 py-16">
+                    No products available right now.
                 </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-xl font-serif">Glazed Wagyu Ribeye</h3>
-                        <span class="gold-text font-bold">$85.00</span>
-                    </div>
-                    <div class="flex text-yellow-500 text-xs mb-4">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
-                        <span class="text-gray-500 ml-2">(89 Reviews)</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mb-6">Premium A5 Wagyu beef served with garlic confit, roasted heirloom carrots, and red wine jus.</p>
-                    <button onclick="addToCart('Glazed Wagyu Ribeye', 85)" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-widest">
-                        <i class="fa-solid fa-cart-plus"></i> Add to Order
-                    </button>
-                </div>
-            </div>
-
-            <div class="food-card rounded-xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
-                <div class="h-64 overflow-hidden relative group">
-                    <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&q=80&w=800" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                </div>
-                <div class="p-6">
-                    <div class="flex justify-between items-start mb-2">
-                        <h3 class="text-xl font-serif">Velvet Chocolate Sphere</h3>
-                        <span class="gold-text font-bold">$18.00</span>
-                    </div>
-                    <div class="flex text-yellow-500 text-xs mb-4">
-                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
-                        <span class="text-gray-500 ml-2">(56 Reviews)</span>
-                    </div>
-                    <p class="text-gray-400 text-sm mb-6">Dark Belgian chocolate sphere filled with raspberry mousse, melted with hot caramel sauce.</p>
-                    <button onclick="addToCart('Velvet Chocolate Sphere', 18)" class="w-full py-3 bg-white/5 border border-white/10 hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-widest">
-                        <i class="fa-solid fa-cart-plus"></i> Add to Order
-                    </button>
-                </div>
-            </div>
+            @endforelse
         </div>
     </section>
 
@@ -312,8 +283,43 @@
         Item added to selection
     </div>
 
+    <div id="product-modal" class="fixed inset-0 z-[110] hidden">
+        <div class="absolute inset-0 bg-black/70" onclick="closeProductModal()"></div>
+        <div class="absolute inset-x-0 top-8 mx-auto w-[95%] md:w-[760px] max-h-[88vh] overflow-y-auto bg-[#111] border border-gold/40 rounded-2xl p-6 md:p-8">
+            <div class="flex justify-between items-start gap-4 mb-5">
+                <div>
+                    <h3 id="modal-product-name" class="text-3xl font-serif gold-text"></h3>
+                    <p id="modal-product-price" class="text-sm text-gray-300 mt-1"></p>
+                </div>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-white text-2xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <p id="modal-product-description" class="text-gray-300 mb-6"></p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border border-white/10 rounded-xl p-4 bg-black/20">
+                    <h4 class="font-semibold uppercase tracking-widest text-xs text-gold mb-3">Ingredients</h4>
+                    <ul id="modal-ingredients" class="space-y-2 text-sm text-gray-300"></ul>
+                </div>
+                <div class="border border-white/10 rounded-xl p-4 bg-black/20">
+                    <h4 class="font-semibold uppercase tracking-widest text-xs text-gold mb-3">Addons</h4>
+                    <ul id="modal-addons" class="space-y-2 text-sm text-gray-300"></ul>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button id="modal-add-cart-btn" class="w-full py-3 bg-gold text-black font-bold uppercase tracking-widest hover:bg-white transition-all">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         AOS.init({ duration: 1000, once: true, offset: 100 });
+        const products = @json($products);
 
         let cart = [];
         const cartDrawer = document.getElementById('cart-drawer');
@@ -321,19 +327,97 @@
         const cartCount = document.getElementById('cart-count');
         const cartTotal = document.getElementById('cart-total');
         const emptyMsg = document.getElementById('empty-cart-msg');
+        const CART_STORAGE_KEY = 'luxury_restaurant_cart';
 
         function toggleCart() { cartDrawer.classList.toggle('open'); }
 
-        function addToCart(name, price) {
-            const existingItem = cart.find((item) => item.name === name);
-            if (existingItem) existingItem.qty++;
-            else cart.push({ name, price, qty: 1 });
+        function saveCartToStorage() {
+            localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+        }
+
+        function loadCartFromStorage() {
+            try {
+                const raw = localStorage.getItem(CART_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : [];
+                cart = Array.isArray(parsed) ? parsed : [];
+                migrateLegacyCartItems();
+            } catch (e) {
+                cart = [];
+            }
+        }
+
+        function getItemSignature(item) {
+            const addonNames = (item.addons || []).map((a) => a.name).sort().join('|');
+            return `${item.name}::${item.isAddonOnly ? 'addon' : 'base'}::${addonNames}`;
+        }
+
+        function upsertCartItem(newItem) {
+            const signature = getItemSignature(newItem);
+            const existing = cart.find((item) => getItemSignature(item) === signature);
+            if (existing) {
+                existing.qty += newItem.qty;
+            } else {
+                cart.push(newItem);
+            }
+        }
+
+        function migrateLegacyCartItems() {
+            if (!cart.length) return;
+            const migrated = [];
+
+            cart.forEach((item) => {
+                const qty = Number(item.qty || 1);
+                const basePrice = Number(item.price || 0);
+                const addons = Array.isArray(item.addons) ? item.addons : [];
+
+                if (addons.length && !item.isAddonOnly) {
+                    const addonTotal = addons.reduce((sum, addon) => sum + Number(addon.price || 0), 0);
+                    upsertIntoList(migrated, { name: item.name, price: basePrice, qty, addons: [], isAddonOnly: false });
+                    upsertIntoList(migrated, { name: item.name, price: addonTotal, qty, addons, isAddonOnly: true });
+                } else {
+                    upsertIntoList(migrated, {
+                        name: item.name,
+                        price: basePrice,
+                        qty,
+                        addons,
+                        isAddonOnly: !!item.isAddonOnly,
+                    });
+                }
+            });
+
+            cart = migrated;
+        }
+
+        function upsertIntoList(list, newItem) {
+            const addonNames = (newItem.addons || []).map((a) => a.name).sort().join('|');
+            const signature = `${newItem.name}::${newItem.isAddonOnly ? 'addon' : 'base'}::${addonNames}`;
+            const existing = list.find((item) => {
+                const itemAddons = (item.addons || []).map((a) => a.name).sort().join('|');
+                const itemSignature = `${item.name}::${item.isAddonOnly ? 'addon' : 'base'}::${itemAddons}`;
+                return itemSignature === signature;
+            });
+
+            if (existing) existing.qty += newItem.qty;
+            else list.push(newItem);
+        }
+
+        function addToCart(name, price, addons = []) {
+            const safeAddons = Array.isArray(addons) ? addons : [];
+
+            if (safeAddons.length) {
+                const addonTotal = safeAddons.reduce((sum, addon) => sum + Number(addon.price || 0), 0);
+                upsertCartItem({ name, price: Number(price), qty: 1, addons: [], isAddonOnly: false });
+                upsertCartItem({ name, price: addonTotal, qty: 1, addons: safeAddons, isAddonOnly: true });
+            } else {
+                upsertCartItem({ name, price: Number(price), qty: 1, addons: [], isAddonOnly: false });
+            }
+
             updateCartUI();
             showToast(name + ' added');
         }
 
-        function removeFromCart(name) {
-            cart = cart.filter((item) => item.name !== name);
+        function removeFromCart(cartIndex) {
+            cart.splice(cartIndex, 1);
             updateCartUI();
         }
 
@@ -345,17 +429,30 @@
             if (cart.length === 0) {
                 cartItemsContainer.appendChild(emptyMsg);
             } else {
-                cart.forEach((item) => {
-                    total += item.price * item.qty;
+                cart.forEach((item, index) => {
+                    const unitTotal = Number(item.price);
+                    total += unitTotal * item.qty;
                     count += item.qty;
+                    const addonNames = (item.addons || []).map((a) => a.name);
+                    const titleWithAddons = item.isAddonOnly && addonNames.length
+                        ? `${item.name} (${addonNames.join(', ')})`
+                        : item.name;
+                    const baseLine = item.isAddonOnly
+                        ? `<p class="text-[11px] text-gray-400 mt-1">Addon Pack: $${Number(item.price).toFixed(2)}</p>`
+                        : `<p class="text-[11px] text-gray-400 mt-1">Base: $${Number(item.price).toFixed(2)}</p>`;
+                    const addonLine = item.isAddonOnly && addonNames.length
+                        ? `<p class="text-[11px] text-gray-500">Addons: ${item.addons.map((a) => `${a.name} ($${Number(a.price).toFixed(2)})`).join(', ')}</p>`
+                        : `<p class="text-[11px] text-gray-500">Addons: None</p>`;
                     const div = document.createElement('div');
                     div.className = 'flex justify-between items-center';
                     div.innerHTML = `
                         <div>
-                            <h4 class="text-sm font-bold text-white uppercase tracking-wider">${item.name}</h4>
-                            <p class="text-xs gold-text">${item.qty} x $${item.price.toFixed(2)}</p>
+                            <h4 class="text-sm font-bold text-white uppercase tracking-wider">${titleWithAddons}</h4>
+                            <p class="text-xs gold-text">${item.qty} x $${unitTotal.toFixed(2)}</p>
+                            ${baseLine}
+                            ${addonLine}
                         </div>
-                        <button onclick="removeFromCart('${item.name}')" class="text-soft-red hover:text-white transition-all">
+                        <button onclick="removeFromCart(${index})" class="text-soft-red hover:text-white transition-all">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
                     `;
@@ -365,6 +462,7 @@
 
             cartCount.textContent = count;
             cartTotal.textContent = '$' + total.toFixed(2);
+            saveCartToStorage();
         }
 
         function showToast(msg) {
@@ -395,6 +493,74 @@
         function toggleMobileMenu() {
             showToast('Luxury menu opening...');
         }
+
+        function openProductModal(productId) {
+            const product = products.find((p) => p.id === productId);
+            if (!product) return;
+
+            document.getElementById('modal-product-name').textContent = product.name;
+            document.getElementById('modal-product-price').textContent = '$' + Number(product.price).toFixed(2);
+            document.getElementById('modal-product-description').textContent = product.description || 'No description available.';
+
+            const ingredientsEl = document.getElementById('modal-ingredients');
+            ingredientsEl.innerHTML = '';
+            if (product.product_ingredients && product.product_ingredients.length) {
+                product.product_ingredients.forEach((item) => {
+                    const li = document.createElement('li');
+                    const ingredientName = item.ingredient ? item.ingredient.name : 'Ingredient';
+                    const unit = item.ingredient && item.ingredient.unit ? item.ingredient.unit : '';
+                    li.textContent = ingredientName + ' - ' + item.qty + (unit ? ' ' + unit : '');
+                    ingredientsEl.appendChild(li);
+                });
+            } else {
+                ingredientsEl.innerHTML = '<li class="text-gray-500">No ingredients configured.</li>';
+            }
+
+            const addonsEl = document.getElementById('modal-addons');
+            addonsEl.innerHTML = '';
+            if (product.product_addons && product.product_addons.length) {
+                product.product_addons.forEach((item, idx) => {
+                    const li = document.createElement('li');
+                    const addonName = item.addon ? item.addon.name : 'Addon';
+                    const addonPrice = item.addon ? Number(item.addon.price).toFixed(2) : '0.00';
+                    const addonId = item.addon ? item.addon.id : ('addon-' + idx);
+                    li.innerHTML = `
+                        <label class="flex items-center justify-between gap-3 cursor-pointer border border-white/10 rounded-lg px-3 py-2">
+                            <span class="flex items-center gap-2">
+                                <input type="checkbox" class="modal-addon-checkbox accent-[#D4AF37]" data-addon-id="${addonId}" data-addon-name="${addonName}" data-addon-price="${addonPrice}">
+                                <span>${addonName}</span>
+                            </span>
+                            <span class="text-gold">$${addonPrice}</span>
+                        </label>
+                    `;
+                    addonsEl.appendChild(li);
+                });
+            } else {
+                addonsEl.innerHTML = '<li class="text-gray-500">No addons configured.</li>';
+            }
+
+            const modalAddBtn = document.getElementById('modal-add-cart-btn');
+            modalAddBtn.onclick = function () {
+                const selectedAddons = Array.from(document.querySelectorAll('.modal-addon-checkbox:checked')).map((checkbox) => ({
+                    id: checkbox.dataset.addonId,
+                    name: checkbox.dataset.addonName,
+                    price: Number(checkbox.dataset.addonPrice),
+                }));
+                addToCart(product.name, Number(product.price), selectedAddons);
+                closeProductModal();
+            };
+
+            document.getElementById('product-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        loadCartFromStorage();
+        updateCartUI();
     </script>
 </body>
 </html>
