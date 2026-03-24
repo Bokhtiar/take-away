@@ -77,3 +77,8 @@ Route::resource('products', \App\Http\Controllers\Admin\ProductController::class
     ->names('admin.products')
     ->middleware('admin.check.permission:products');
 
+/** ingredients */
+Route::resource('ingredients', \App\Http\Controllers\Admin\IngredientController::class)
+    ->names('admin.ingredients')
+    ->middleware('admin.check.permission:ingredients');
+
