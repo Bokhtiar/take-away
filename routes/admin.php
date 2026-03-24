@@ -72,3 +72,8 @@ Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::cl
     ->names('admin.categories')
     ->middleware('admin.check.permission:categories');
 
+/** products */
+Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)
+    ->names('admin.products')
+    ->middleware('admin.check.permission:products');
+

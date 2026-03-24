@@ -184,6 +184,18 @@ class MenuPermissionSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'id' => 11,
+                'name' => 'Products',
+                'slug' => 'products',
+                'icon' => 'ri-shopping-bag-3-line',
+                'url' => '/admin/products',
+                'parent_id' => 8,
+                'sort_order' => 3,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         // ======================
@@ -248,6 +260,13 @@ class MenuPermissionSeeder extends Seeder
             ['menu_id' => 10, 'permission_id' => $editId],
             ['menu_id' => 10, 'permission_id' => $viewId],
             ['menu_id' => 10, 'permission_id' => $deleteId],
+
+            // Products (Child with ALL actions)
+            ['menu_id' => 11, 'permission_id' => $accessId],
+            ['menu_id' => 11, 'permission_id' => $createId],
+            ['menu_id' => 11, 'permission_id' => $editId],
+            ['menu_id' => 11, 'permission_id' => $viewId],
+            ['menu_id' => 11, 'permission_id' => $deleteId],
         ];
 
         foreach ($menuPermissions as $mp) {
