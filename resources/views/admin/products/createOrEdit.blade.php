@@ -29,10 +29,7 @@
                             placeholder="Enter product description...">{{ old('description', $product->description ?? '') }}</textarea>
                     </div>
 
-                    <x-ui.select name="category_id" label="Category" :value="old('category_id', $product->category_id ?? '')" :options="$categories->map(fn ($category) => [
-                        'value' => $category->id,
-                        'label' => $category->name,
-                    ])->values()->all()" required />
+                    <x-ui.select name="category_id" label="Category" :value="old('category_id', $product->category_id ?? '')" :options="$categories->pluck('name', 'id')->toArray()" required />
 
                     <x-ui.input name="slug" type="text" label="Slug"
                         placeholder="e.g., burger-combo (auto-generated if empty)"
@@ -45,8 +42,8 @@
                         value="{{ old('image_url', $product->image_url ?? '') }}" />
 
                     <x-ui.select name="is_available" label="Availability" :value="old('is_available', isset($product) ? (int) $product->is_available : 1)" :options="[
-                        ['value' => 1, 'label' => 'Available'],
-                        ['value' => 0, 'label' => 'Unavailable'],
+                        1 => 'Available',
+                        0 => 'Unavailable',
                     ]" required />
 
                     <div class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200 dark:border-gray-700">

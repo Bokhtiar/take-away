@@ -9,7 +9,7 @@
 
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow border border-gray-200 dark:border-gray-700 p-6">
             <form method="GET" action="{{ route('admin.product-ingredients.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                <x-ui.select name="product_id" label="Select Product" :value="$selectedProductId ?? ''" :options="$products->map(fn ($product) => ['value' => $product->id, 'label' => $product->name])->values()->all()" required />
+                <x-ui.select name="product_id" label="Select Product" :value="$selectedProductId ?? ''" :options="$products->pluck('name', 'id')->toArray()" required />
                 <div>
                     <x-ui.button type="submit" variant="primary" size="md">Load Ingredients</x-ui.button>
                 </div>

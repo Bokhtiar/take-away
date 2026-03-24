@@ -26,8 +26,8 @@
                     <p class="text-xs text-gray-500 dark:text-gray-400 -mt-4 mb-2">Leave empty to auto-generate from name.</p>
 
                     <x-ui.select name="status" label="Status" :value="old('status', isset($category) ? (int) $category->status : 1)" :options="[
-                        ['value' => 1, 'label' => 'Active'],
-                        ['value' => 0, 'label' => 'Inactive'],
+                        1 => 'Active',
+                        0 => 'Inactive',
                     ]" required />
 
                     <div class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200 dark:border-gray-700">
