@@ -1,11 +1,26 @@
-@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* Custom utilities */
+@layer components {
+    .show-icon-button {
+        @apply inline-flex items-center justify-center w-8 h-8 rounded-lg border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white dark:hover:text-white transition-colors;
+    }
+    .show-icon-button i {
+        @apply block leading-none;
+    }
+    .edit-icon-button {
+        @apply inline-flex items-center justify-center w-8 h-8 rounded-lg border border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-600 dark:hover:bg-indigo-600 hover:text-white dark:hover:text-white transition-colors;
+    }
+    .edit-icon-button i {
+        @apply block leading-none;
+    }
+    .delete-icon-button {
+        @apply inline-flex items-center justify-center w-8 h-8 rounded-lg border border-red-600 dark:border-red-400 text-red-600 dark:text-red-400 hover:bg-red-600 dark:hover:bg-red-600 hover:text-white dark:hover:text-white transition-colors;
+    }
+    .delete-icon-button i {
+        @apply block leading-none;
+    }
 }

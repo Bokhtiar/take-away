@@ -3,28 +3,69 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: myrestaurant-app
+    container_name: BokhtiarPro
+    restart: unless-stopped
+    entrypoint: sh
+    command: -c "composer dump-autoload --no-scripts && php artisan serve --host=0.0.0.0 --port=8000"
     ports:
-      - "8006:8006"
+      - "8006:8000"
     volumes:
-      - ./:/var/www/html
-    env_file:
-      - .env
+      - .:/var/www/html
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: bokhtiar_pro
+      DB_USERNAME: bokhtiar_pro_user
+      DB_PASSWORD: bokhtiar_pro_password
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - laravel_network
 
   db:
     image: mysql:8.0
-    container_name: myrestaurant-db
+    container_name: BokhtiarPro_db
+    restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: myrestaurant
-      MYSQL_USER: myrestaurant
-      MYSQL_PASSWORD: myrestaurant
+      MYSQL_DATABASE: bokhtiar_pro
+      MYSQL_USER: bokhtiar_pro_user
+      MYSQL_PASSWORD: bokhtiar_pro_password
+      MYSQL_ROOT_PASSWORD: rootpassword
     ports:
-      - "8086:3306"
+      - "3306:3306"
     volumes:
-      - db_data:/var/lib/mysql
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - laravel_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: BokhtiarPro_phpmyadmin
+    restart: unless-stopped
+    ports:
+      - "8086:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - laravel_network
 
 volumes:
-  db_data:
+  dbdata:
+
+networks:
+  laravel_network:
+    driver: bridge
