@@ -29,8 +29,10 @@ class CheckAdminPermission
          */
         $actionMap = [
             'index' => 'access',       // GET list page -> access permission
+            'assign' => 'access',      // Custom role assignment page -> access permission
             'store' => 'create',      // POST request → create permission
             'update' => 'edit',       // PUT request → edit permission
+            'updateBulk' => 'edit',   // Custom bulk update -> edit permission
             'destroy' => 'delete',    // DELETE request → delete permission
         ];
 
