@@ -67,3 +67,8 @@ Route::resource('admins', \App\Http\Controllers\Admin\AdminController::class)
     ->names('admin.admins')
     ->middleware('admin.check.permission:admins');
 
+/** categories */
+Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class)
+    ->names('admin.categories')
+    ->middleware('admin.check.permission:categories');
+

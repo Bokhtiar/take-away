@@ -158,18 +158,32 @@ class MenuPermissionSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        // Admin Child (Single child with all actions)
+        // Admin Child Menus
         DB::table('admin_menus')->insert([
-            'id' => 9,
-            'name' => 'Admins',
-            'slug' => 'admins',
-            'icon' => 'ri-team-line',
-            'url' => '/admin/admins',
-            'parent_id' => 8,
-            'sort_order' => 1,
-            'is_active' => true,
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'id' => 9,
+                'name' => 'Admins',
+                'slug' => 'admins',
+                'icon' => 'ri-team-line',
+                'url' => '/admin/admins',
+                'parent_id' => 8,
+                'sort_order' => 1,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 10,
+                'name' => 'Categories',
+                'slug' => 'categories',
+                'icon' => 'ri-price-tag-3-line',
+                'url' => '/admin/categories',
+                'parent_id' => 8,
+                'sort_order' => 2,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         // ======================
@@ -227,6 +241,13 @@ class MenuPermissionSeeder extends Seeder
             ['menu_id' => 9, 'permission_id' => $editId],    // Edit (edit icon)
             ['menu_id' => 9, 'permission_id' => $viewId],    // View (view icon)
             ['menu_id' => 9, 'permission_id' => $deleteId],  // Delete (delete icon)
+
+            // Categories (Child with ALL actions)
+            ['menu_id' => 10, 'permission_id' => $accessId],
+            ['menu_id' => 10, 'permission_id' => $createId],
+            ['menu_id' => 10, 'permission_id' => $editId],
+            ['menu_id' => 10, 'permission_id' => $viewId],
+            ['menu_id' => 10, 'permission_id' => $deleteId],
         ];
 
         foreach ($menuPermissions as $mp) {
