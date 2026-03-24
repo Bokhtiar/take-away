@@ -178,9 +178,12 @@
                             <span class="gold-text font-bold">${{ number_format((float) $product->price, 2) }}</span>
                         </div>
                         <p class="text-gray-400 text-sm mb-6">{{ \Illuminate\Support\Str::limit($product->description ?: 'A delightful dish curated by our chef.', 120) }}</p>
-                        <div class="grid grid-cols-1 gap-2">
+                        <div class="grid grid-cols-2 gap-2">
                             <button onclick="openProductModal({{ $product->id }})" class="py-3 bg-white/5 border border-white/10 hover:border-gold transition-all text-xs font-bold uppercase tracking-widest">
                                 Details
+                            </button>
+                            <button onclick="addToCart('{{ addslashes($product->name) }}', {{ (float) $product->price }})" class="py-3 bg-white/5 border border-white/10 hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest">
+                                <i class="fa-solid fa-cart-plus"></i> Add
                             </button>
                         </div>
                     </div>
@@ -309,11 +312,6 @@
                 </div>
             </div>
 
-            <div class="mt-6">
-                <button id="modal-add-cart-btn" class="w-full py-3 bg-gold text-black font-bold uppercase tracking-widest hover:bg-white transition-all">
-                    Add to Cart
-                </button>
-            </div>
         </div>
     </div>
 
@@ -525,13 +523,17 @@
                     const addonPrice = item.addon ? Number(item.addon.price).toFixed(2) : '0.00';
                     const addonId = item.addon ? item.addon.id : ('addon-' + idx);
                     li.innerHTML = `
-                        <label class="flex items-center justify-between gap-3 cursor-pointer border border-white/10 rounded-lg px-3 py-2">
-                            <span class="flex items-center gap-2">
-                                <input type="checkbox" class="modal-addon-checkbox accent-[#D4AF37]" data-addon-id="${addonId}" data-addon-name="${addonName}" data-addon-price="${addonPrice}">
-                                <span>${addonName}</span>
-                            </span>
-                            <span class="text-gold">$${addonPrice}</span>
-                        </label>
+                        <div class="flex items-center justify-between gap-3 border border-white/10 rounded-lg px-3 py-2">
+                            <span>${addonName}</span>
+                            <div class="flex items-center gap-3">
+                                <span class="text-gold">$${addonPrice}</span>
+                                <button type="button"
+                                    class="text-gold hover:text-white transition-all"
+                                    onclick="addProductWithAddon(${product.id}, '${addonId}', '${addonName.replace(/'/g, "\\'")}', ${addonPrice})">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
                     `;
                     addonsEl.appendChild(li);
                 });
@@ -539,19 +541,27 @@
                 addonsEl.innerHTML = '<li class="text-gray-500">No addons configured.</li>';
             }
 
-            const modalAddBtn = document.getElementById('modal-add-cart-btn');
-            modalAddBtn.onclick = function () {
-                const selectedAddons = Array.from(document.querySelectorAll('.modal-addon-checkbox:checked')).map((checkbox) => ({
-                    id: checkbox.dataset.addonId,
-                    name: checkbox.dataset.addonName,
-                    price: Number(checkbox.dataset.addonPrice),
-                }));
-                addToCart(product.name, Number(product.price), selectedAddons);
-                closeProductModal();
-            };
-
             document.getElementById('product-modal').classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+        }
+
+        function addProductWithAddon(productId, addonId, addonName, addonPrice) {
+            const product = products.find((p) => p.id === productId);
+            if (!product) return;
+
+            upsertCartItem({
+                name: product.name,
+                price: Number(addonPrice),
+                qty: 1,
+                addons: [{
+                    id: addonId,
+                    name: addonName,
+                    price: Number(addonPrice),
+                }],
+                isAddonOnly: true,
+            });
+            updateCartUI();
+            showToast(product.name + ' addon added');
         }
 
         function closeProductModal() {
