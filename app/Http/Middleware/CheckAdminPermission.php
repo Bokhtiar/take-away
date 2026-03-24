@@ -28,6 +28,7 @@ class CheckAdminPermission
          * Custom methods (updateBulk, assign, etc.) match directly with DB permissions.
          */
         $actionMap = [
+            'index' => 'access',       // GET list page -> access permission
             'store' => 'create',      // POST request → create permission
             'update' => 'edit',       // PUT request → edit permission
             'destroy' => 'delete',    // DELETE request → delete permission

@@ -13,10 +13,12 @@ class MenuPermissionSeeder extends Seeder
     public function run(): void
     {
         // Clear existing data (optional - be careful in production)
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         DB::table('admin_role_menu_permission')->truncate();
         DB::table('admin_menu_permission')->truncate();
         DB::table('admin_menus')->truncate();
         DB::table('admin_permissions')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
         // ======================
         // 1. CREATE PERMISSIONS

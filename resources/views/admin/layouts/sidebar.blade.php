@@ -136,7 +136,7 @@
         renderDynamicSidebar();
     });
 
-    // Filter menus based on index permission
+    // Filter menus based on access permission
     function filterMenusByPermission(menus) {
         const filtered = {};
         
@@ -144,20 +144,20 @@
             const menu = menus[menuId];
             const menuPermissions = menu.permissions || {};
             
-            // Check index permission (list/access permission)
-            const hasIndexPermission = menuPermissions.hasOwnProperty('index');
+            // Check access permission (list/view sidebar permission)
+            const hasAccessPermission = menuPermissions.hasOwnProperty('access');
             
-            // Filter children with index permission
+            // Filter children with access permission
             let allowedChildren = [];
             if (menu.children && menu.children.length > 0) {
                 allowedChildren = menu.children.filter(child => {
                     const childPerms = child.permissions || {};
-                    return childPerms.hasOwnProperty('index');
+                    return childPerms.hasOwnProperty('access');
                 });
             }
             
-            // Show menu if has index permission OR has allowed children
-            if (hasIndexPermission || allowedChildren.length > 0) {
+            // Show menu if has access permission OR has allowed children
+            if (hasAccessPermission || allowedChildren.length > 0) {
                 filtered[menuId] = {
                     ...menu,
                     children: allowedChildren
