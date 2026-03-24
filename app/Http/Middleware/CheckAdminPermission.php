@@ -30,6 +30,7 @@ class CheckAdminPermission
         $actionMap = [
             'index' => 'access',       // GET list page -> access permission
             'assign' => 'access',      // Custom role assignment page -> access permission
+            'show' => 'view',          // GET single record page -> view permission
             'store' => 'create',      // POST request → create permission
             'update' => 'edit',       // PUT request → edit permission
             'updateBulk' => 'edit',   // Custom bulk update -> edit permission
