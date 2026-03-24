@@ -208,6 +208,18 @@ class MenuPermissionSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'id' => 13,
+                'name' => 'Product Ingredients',
+                'slug' => 'product-ingredients',
+                'icon' => 'ri-list-check-3',
+                'url' => '/admin/product-ingredients',
+                'parent_id' => 11,
+                'sort_order' => 2,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         // ======================
@@ -286,6 +298,13 @@ class MenuPermissionSeeder extends Seeder
             ['menu_id' => 12, 'permission_id' => $editId],
             ['menu_id' => 12, 'permission_id' => $viewId],
             ['menu_id' => 12, 'permission_id' => $deleteId],
+
+            // Product Ingredients (One page)
+            ['menu_id' => 13, 'permission_id' => $accessId],
+            ['menu_id' => 13, 'permission_id' => $createId],
+            ['menu_id' => 13, 'permission_id' => $editId],
+            ['menu_id' => 13, 'permission_id' => $viewId],
+            ['menu_id' => 13, 'permission_id' => $deleteId],
         ];
 
         foreach ($menuPermissions as $mp) {

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ingredient extends Model
@@ -18,5 +19,10 @@ class Ingredient extends Model
     protected $casts = [
         'stock_qty' => 'decimal:2',
     ];
+
+    public function productIngredients(): HasMany
+    {
+        return $this->hasMany(ProductIngredient::class);
+    }
 }
 
