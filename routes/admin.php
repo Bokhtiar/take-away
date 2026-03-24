@@ -90,3 +90,8 @@ Route::post('product-ingredients', [\App\Http\Controllers\Admin\ProductIngredien
     ->name('admin.product-ingredients.store')
     ->middleware('admin.check.permission:product-ingredients');
 
+/** addons */
+Route::resource('addons', \App\Http\Controllers\Admin\AddonController::class)
+    ->names('admin.addons')
+    ->middleware('admin.check.permission:addons');
+
