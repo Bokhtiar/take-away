@@ -103,3 +103,9 @@ Route::post('product-addons', [\App\Http\Controllers\Admin\ProductAddonControlle
     ->name('admin.product-addons.store')
     ->middleware('admin.check.permission:product-addons');
 
+/** orders */
+Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)
+    ->only(['index', 'show', 'update', 'destroy'])
+    ->names('admin.orders')
+    ->middleware('admin.check.permission:orders');
+

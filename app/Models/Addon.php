@@ -23,5 +23,10 @@ class Addon extends Model
     {
         return $this->hasMany(ProductAddon::class);
     }
+
+    public function orderItemAddons(): HasMany
+    {
+        return $this->hasMany(OrderItemAddon::class);
+    }
 }
 

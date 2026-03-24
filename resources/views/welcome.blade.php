@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>L'Oasis d'Or | Fine Dining & Luxury Cuisine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -114,9 +115,21 @@
                     <img src="{{ $avatarUrl }}" alt="avatar" class="w-9 h-9 rounded-full object-cover border border-gold/60">
                     <span class="text-sm text-white font-medium">{{ $avatarName }}</span>
                 </div>
+                <a href="{{ route('orders.index') }}" class="hidden md:inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
+                    My Orders
+                </a>
+                <form method="POST" action="{{ route('user.logout') }}" class="hidden md:block">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
+                        Logout
+                    </button>
+                </form>
             @else
-                <a href="{{ route('admin.login') }}" class="hidden md:inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
+                <a href="{{ route('user.login') }}" class="hidden md:inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
                     Login
+                </a>
+                <a href="{{ route('user.register') }}" class="hidden md:inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
+                    Register
                 </a>
             @endauth
             <button class="md:hidden text-2xl" onclick="toggleMobileMenu()">
@@ -182,7 +195,7 @@
                             <button onclick="openProductModal({{ $product->id }})" class="py-3 bg-white/5 border border-white/10 hover:border-gold transition-all text-xs font-bold uppercase tracking-widest">
                                 Details
                             </button>
-                            <button onclick="addToCart('{{ addslashes($product->name) }}', {{ (float) $product->price }})" class="py-3 bg-white/5 border border-white/10 hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest">
+                            <button onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ (float) $product->price }})" class="py-3 bg-white/5 border border-white/10 hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest">
                                 <i class="fa-solid fa-cart-plus"></i> Add
                             </button>
                         </div>
@@ -326,6 +339,7 @@
         const cartTotal = document.getElementById('cart-total');
         const emptyMsg = document.getElementById('empty-cart-msg');
         const CART_STORAGE_KEY = 'luxury_restaurant_cart';
+        const isLoggedIn = @json(auth()->check());
 
         function toggleCart() { cartDrawer.classList.toggle('open'); }
 
@@ -399,15 +413,15 @@
             else list.push(newItem);
         }
 
-        function addToCart(name, price, addons = []) {
+        function addToCart(productId, name, price, addons = []) {
             const safeAddons = Array.isArray(addons) ? addons : [];
 
             if (safeAddons.length) {
                 const addonTotal = safeAddons.reduce((sum, addon) => sum + Number(addon.price || 0), 0);
-                upsertCartItem({ name, price: Number(price), qty: 1, addons: [], isAddonOnly: false });
-                upsertCartItem({ name, price: addonTotal, qty: 1, addons: safeAddons, isAddonOnly: true });
+                upsertCartItem({ product_id: Number(productId), name, price: Number(price), qty: 1, addons: [], isAddonOnly: false });
+                upsertCartItem({ product_id: Number(productId), name, price: addonTotal, qty: 1, addons: safeAddons, isAddonOnly: true });
             } else {
-                upsertCartItem({ name, price: Number(price), qty: 1, addons: [], isAddonOnly: false });
+                upsertCartItem({ product_id: Number(productId), name, price: Number(price), qty: 1, addons: [], isAddonOnly: false });
             }
 
             updateCartUI();
@@ -474,12 +488,69 @@
             }, 2000);
         }
 
-        function checkout() {
+        async function checkout() {
             if (cart.length === 0) {
                 showToast('Cart is empty');
                 return;
             }
-            showToast('Redirecting to secured payment...');
+
+            if (!isLoggedIn) {
+                window.location.href = '{{ route('user.login') }}';
+                return;
+            }
+
+            const payloadItems = cart
+                .filter((item) => Number(item.product_id) > 0)
+                .map((item) => ({
+                    product_id: Number(item.product_id),
+                    qty: Number(item.qty || 1),
+                    base_price: item.isAddonOnly ? 0 : Number(item.price || 0),
+                    addons: (item.addons || []).map((addon) => ({
+                        addon_id: Number(addon.id),
+                    })).filter((addon) => addon.addon_id > 0),
+                }));
+
+            if (!payloadItems.length) {
+                showToast('No valid product found in cart');
+                return;
+            }
+
+            const defaultName = @json(auth()->user()->name ?? '');
+            const defaultPhone = @json(data_get(auth()->user(), 'phone', ''));
+            const customerName = defaultName || window.prompt('Enter customer name');
+            const customerPhone = defaultPhone || window.prompt('Enter customer phone');
+
+            if (!customerName || !customerPhone) {
+                showToast('Name and phone are required');
+                return;
+            }
+
+            try {
+                const response = await fetch('{{ route('orders.store') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        customer_name: customerName,
+                        customer_phone: customerPhone,
+                        items: payloadItems,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Order request failed');
+                }
+
+                const result = await response.json();
+                cart = [];
+                updateCartUI();
+                showToast(`Order #${result.order_id} placed successfully`);
+            } catch (error) {
+                showToast('Failed to place order');
+            }
         }
 
         document.getElementById('b2bForm').addEventListener('submit', (e) => {
@@ -550,6 +621,7 @@
             if (!product) return;
 
             upsertCartItem({
+                product_id: Number(product.id),
                 name: product.name,
                 price: Number(addonPrice),
                 qty: 1,
