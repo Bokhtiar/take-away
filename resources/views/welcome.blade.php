@@ -221,19 +221,68 @@
 
     <section id="chef" class="py-24 bg-[#050505]">
         <div class="max-w-7xl mx-auto px-6 md:px-12">
-            <div class="flex flex-col lg:flex-row items-center gap-16">
-                <div class="lg:w-1/2" data-aos="fade-right">
+            @php
+                $headName = $headChef?->name ?? 'Julian Vane';
+                $headDesignation = $headChef?->designation ?? 'Executive Chef';
+                $headImage = $headChef?->image_url ?: 'https://images.unsplash.com/photo-1583394838336-acd977730f90?auto=format&fit=crop&q=80&w=800';
+                $team = $juniorChefs ?? collect();
+            @endphp
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-6" data-aos="fade-right">
                     <div class="relative">
                         <div class="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-gold"></div>
-                        <img src="https://images.unsplash.com/photo-1583394838336-acd977730f90?auto=format&fit=crop&q=80&w=800" class="w-full grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl">
+                        <img src="{{ $headImage }}" alt="{{ $headName }}" class="w-full grayscale hover:grayscale-0 transition-all duration-700 shadow-2xl">
                         <div class="absolute -bottom-4 -right-4 w-24 h-24 border-b-2 border-r-2 border-gold"></div>
+
+                        <div class="absolute bottom-4 left-4 right-4 bg-black/70 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-4">
+                            <p class="text-xs uppercase tracking-[0.35em] text-gray-300">Head Chef</p>
+                            <p class="font-serif text-2xl gold-text mt-1">{{ $headName }}</p>
+                            <p class="text-sm text-gray-300 mt-1">{{ $headDesignation }}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="lg:w-1/2" data-aos="fade-left">
-                    <span class="gold-text uppercase tracking-widest text-sm mb-4 block">Maestro of the Kitchen</span>
-                    <h2 class="text-4xl md:text-5xl font-serif mb-6 leading-tight">Meet Executive Chef <br>Julian Vane</h2>
-                    <p class="text-gray-400 mb-8 leading-relaxed">With over three decades of experience in Michelin-starred kitchens across Paris and Tokyo, Chef Vane brings a unique fusion of classical technique and avant-garde presentation to every plate.</p>
-                    <div class="grid grid-cols-2 gap-8 mb-8">
+
+                <div class="lg:col-span-6" data-aos="fade-left">
+                    <span class="gold-text uppercase tracking-widest text-sm mb-4 block">The Culinary Team</span>
+                    <h2 class="text-4xl md:text-5xl font-serif mb-6 leading-tight">
+                        Meet Our <span class="italic">Chefs</span>
+                    </h2>
+                    <p class="text-gray-400 mb-8 leading-relaxed">
+                        From signature mains to delicate pastries — our kitchen team crafts each plate with precision and care.
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        @forelse($team as $c)
+                            @php
+                                $cImg = $c->image_url ?: ('https://ui-avatars.com/api/?name=' . urlencode($c->name) . '&background=0A0A0A&color=D4AF37');
+                            @endphp
+                            <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-black/30 hover:border-gold/60 transition">
+                                <div class="absolute -top-3 -left-3 w-14 h-14 border-t-2 border-l-2 border-gold/80"></div>
+                                <div class="absolute -bottom-3 -right-3 w-14 h-14 border-b-2 border-r-2 border-gold/80"></div>
+
+                                <div class="flex items-center gap-4 p-5">
+                                    <img src="{{ $cImg }}" alt="{{ $c->name }}" class="w-32 h-32 rounded-2xl object-cover border border-gold/40">
+                                    <div class="min-w-0">
+                                        <p class="text-white font-semibold truncate text-base">{{ $c->name }}</p>
+                                        <p class="text-xs uppercase tracking-[0.25em] text-gray-400 truncate mt-1">{{ $c->designation }}</p>
+                                    </div>
+                                </div>
+
+                                {{-- <div class="px-5 pb-5">
+                                    <div class="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl px-4 py-2.5">
+                                        <p class="text-[11px] uppercase tracking-[0.35em] text-gray-200">Junior Chef</p>
+                                    </div>
+                                </div> --}}
+                            </div>
+                        @empty
+                            <div class="p-5 rounded-2xl border border-white/10 bg-black/30 text-gray-400">
+                                No junior chefs added yet.
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-8 mt-10">
                         <div>
                             <h4 class="gold-text font-serif text-2xl">15+</h4>
                             <p class="text-gray-500 text-sm uppercase tracking-wider">Culinary Awards</p>

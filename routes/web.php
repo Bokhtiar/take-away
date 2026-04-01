@@ -1,11 +1,27 @@
 <?php
 
 use App\Models\Product;
+use App\Models\Chef;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    $headChef = Chef::query()
+        ->orderByRaw("CASE
+            WHEN designation LIKE '%Executive%' THEN 1
+            WHEN designation LIKE '%Head%' THEN 2
+            ELSE 3
+        END")
+        ->latest()
+        ->first();
+
+    $juniorChefs = Chef::query()
+        ->when($headChef?->id, fn ($q) => $q->where('id', '!=', $headChef->id))
+        ->latest()
+        ->limit(3)
+        ->get();
+
     $products = Product::with([
         'category:id,name',
         'productIngredients.ingredient:id,name,unit',
@@ -16,7 +32,7 @@ Route::get('/', function () {
         ->paginate(9)
         ->withQueryString();
 
-    return view('welcome', compact('products'));
+    return view('welcome', compact('products', 'headChef', 'juniorChefs'));
 });
 
 Route::middleware('guest')->group(function () {
