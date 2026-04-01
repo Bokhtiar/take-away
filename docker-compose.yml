@@ -36,7 +36,7 @@ services:
     ports:
       - "8087:3306"
     volumes:
-      - dbdata:/var/lib/mysql
+      - restaurantpro_dbdata:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
       interval: 10s
@@ -64,7 +64,7 @@ services:
       - laravel_network
 
 volumes:
-  dbdata:
+  restaurantpro_dbdata:
 
 networks:
   laravel_network:
