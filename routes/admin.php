@@ -82,6 +82,11 @@ Route::resource('ingredients', \App\Http\Controllers\Admin\IngredientController:
     ->names('admin.ingredients')
     ->middleware('admin.check.permission:ingredients');
 
+/** chefs */
+Route::resource('chefs', \App\Http\Controllers\Admin\ChefController::class)
+    ->names('admin.chefs')
+    ->middleware('admin.check.permission:chefs');
+
 /** product ingredients (one page) */
 Route::get('product-ingredients', [\App\Http\Controllers\Admin\ProductIngredientController::class, 'index'])
     ->name('admin.product-ingredients.index')

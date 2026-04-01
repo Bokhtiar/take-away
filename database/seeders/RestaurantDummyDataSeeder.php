@@ -8,6 +8,7 @@ use App\Models\Ingredient;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderItemAddon;
+use App\Models\Chef;
 use App\Models\Product;
 use App\Models\ProductAddon;
 use App\Models\ProductIngredient;
@@ -40,6 +41,40 @@ class RestaurantDummyDataSeeder extends Seeder
                     'password' => Hash::make('password'),
                 ]
             );
+
+            // Chefs
+            $chefRows = [
+                [
+                    'name' => 'Julian Vane',
+                    'designation' => 'Executive Chef',
+                    'phone' => '01810000001',
+                    'image_url' => 'https://images.unsplash.com/photo-1548940740-204726a19be3?auto=format&fit=crop&q=80&w=800',
+                ],
+                [
+                    'name' => 'Amelia Hart',
+                    'designation' => 'Sous Chef',
+                    'phone' => '01810000002',
+                    'image_url' => 'https://images.unsplash.com/photo-1548940740-204726a19be3?auto=format&fit=crop&q=80&w=800',
+                ],
+                [
+                    'name' => 'Noah King',
+                    'designation' => 'Pastry Chef',
+                    'phone' => '01810000003',
+                    'image_url' => 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=800',
+                ],
+            ];
+
+            foreach ($chefRows as $row) {
+                Chef::updateOrCreate(
+                    ['phone' => $row['phone']],
+                    [
+                        'name' => $row['name'],
+                        'designation' => $row['designation'],
+                        'image_url' => $row['image_url'],
+                        'password' => Hash::make('password'),
+                    ]
+                );
+            }
 
             // Categories
             $categories = collect([

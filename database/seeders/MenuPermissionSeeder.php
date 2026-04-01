@@ -173,6 +173,18 @@ class MenuPermissionSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'id' => 18,
+                'name' => 'Chefs',
+                'slug' => 'chefs',
+                'icon' => 'ri-user-star-line',
+                'url' => '/admin/chefs',
+                'parent_id' => 8,
+                'sort_order' => 2,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'id' => 10,
                 'name' => 'Categories',
                 'slug' => 'categories',
@@ -325,6 +337,13 @@ class MenuPermissionSeeder extends Seeder
             ['menu_id' => 9, 'permission_id' => $editId],    // Edit (edit icon)
             ['menu_id' => 9, 'permission_id' => $viewId],    // View (view icon)
             ['menu_id' => 9, 'permission_id' => $deleteId],  // Delete (delete icon)
+
+            // Chefs (Child with ALL actions)
+            ['menu_id' => 18, 'permission_id' => $accessId],
+            ['menu_id' => 18, 'permission_id' => $createId],
+            ['menu_id' => 18, 'permission_id' => $editId],
+            ['menu_id' => 18, 'permission_id' => $viewId],
+            ['menu_id' => 18, 'permission_id' => $deleteId],
 
             // Categories (Child with ALL actions)
             ['menu_id' => 10, 'permission_id' => $accessId],
