@@ -164,19 +164,21 @@
             <p class="text-gray-400 max-w-2xl mx-auto">Handcrafted by our master chefs using the finest seasonal ingredients sourced globally.</p>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-4 mb-12" data-aos="fade-up">
-            <button class="px-6 py-2 border-b-2 border-gold gold-text text-sm uppercase tracking-widest">All Items</button>
-            <button class="px-6 py-2 border-b-2 border-transparent hover:border-gold transition-all text-sm uppercase tracking-widest text-gray-500 hover:text-white">Starters</button>
-            <button class="px-6 py-2 border-b-2 border-transparent hover:border-gold transition-all text-sm uppercase tracking-widest text-gray-500 hover:text-white">Main Course</button>
-            <button class="px-6 py-2 border-b-2 border-transparent hover:border-gold transition-all text-sm uppercase tracking-widest text-gray-500 hover:text-white">Desserts</button>
+        <div id="category-tabs" class="flex flex-wrap justify-center gap-4 mb-12" data-aos="fade-up">
+            <button type="button" data-category="all"
+                class="category-tab px-6 py-2 border-b-2 border-gold gold-text text-sm uppercase tracking-widest">
+                All Items
+            </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($products as $product)
                 @php
                     $productImage = $product->image_url ?: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800';
                 @endphp
-                <div class="food-card rounded-xl overflow-hidden" data-aos="fade-up">
+                <div class="food-card rounded-xl overflow-hidden product-card"
+                    data-aos="fade-up"
+                    data-category="{{ strtolower($product->category?->name ?? 'uncategorized') }}">
                     <div class="h-64 overflow-hidden relative group">
                         <img src="{{ $productImage }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="{{ $product->name }}">
                         @if($product->category)
@@ -207,6 +209,14 @@
                 </div>
             @endforelse
         </div>
+
+        @if ($products instanceof \Illuminate\Contracts\Pagination\Paginator && $products->hasPages())
+            <div class="mt-12 flex justify-center">
+                <div class="bg-black/30 border border-white/10 rounded-2xl px-4 py-3">
+                    {{ $products->links() }}
+                </div>
+            </div>
+        @endif
     </section>
 
     <section id="chef" class="py-24 bg-[#050505]">
@@ -330,7 +340,7 @@
 
     <script>
         AOS.init({ duration: 1000, once: true, offset: 100 });
-        const products = @json($products);
+        const products = @json(method_exists($products, 'items') ? $products->items() : $products);
 
         let cart = [];
         const cartDrawer = document.getElementById('cart-drawer');
@@ -340,6 +350,66 @@
         const emptyMsg = document.getElementById('empty-cart-msg');
         const CART_STORAGE_KEY = 'luxury_restaurant_cart';
         const isLoggedIn = @json(auth()->check());
+
+        function normalizeCategoryName(name) {
+            return String(name || 'uncategorized').trim().toLowerCase();
+        }
+
+        function renderCategoryTabs() {
+            const el = document.getElementById('category-tabs');
+            if (!el) return;
+
+            const categories = new Map();
+            (products || []).forEach((p) => {
+                const label = p?.category?.name || 'Uncategorized';
+                const key = normalizeCategoryName(label);
+                categories.set(key, label);
+            });
+
+            // Keep the first "All Items" button and clear the rest
+            const allBtn = el.querySelector('[data-category="all"]');
+            el.innerHTML = '';
+            if (allBtn) el.appendChild(allBtn);
+
+            Array.from(categories.entries())
+                .sort((a, b) => String(a[1]).localeCompare(String(b[1])))
+                .forEach(([key, label]) => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.dataset.category = key;
+                    btn.className = 'category-tab px-6 py-2 border-b-2 border-transparent hover:border-gold transition-all text-sm uppercase tracking-widest text-gray-500 hover:text-white';
+                    btn.textContent = label;
+                    el.appendChild(btn);
+                });
+
+            el.addEventListener('click', (e) => {
+                const btn = e.target.closest('.category-tab');
+                if (!btn) return;
+                setActiveCategory(btn.dataset.category || 'all');
+            });
+        }
+
+        function setActiveCategory(categoryKey) {
+            const key = categoryKey || 'all';
+            const tabs = document.querySelectorAll('.category-tab');
+            tabs.forEach((tab) => {
+                const isActive = (tab.dataset.category || 'all') === key;
+                tab.classList.toggle('border-gold', isActive);
+                tab.classList.toggle('gold-text', isActive);
+                tab.classList.toggle('text-gray-500', !isActive);
+            });
+            filterProductsByCategory(key);
+        }
+
+        function filterProductsByCategory(categoryKey) {
+            const key = categoryKey || 'all';
+            const cards = document.querySelectorAll('.product-card');
+            cards.forEach((card) => {
+                const cat = normalizeCategoryName(card.dataset.category);
+                const show = key === 'all' ? true : (cat === key);
+                card.classList.toggle('hidden', !show);
+            });
+        }
 
         function toggleCart() { cartDrawer.classList.toggle('open'); }
 
@@ -643,6 +713,8 @@
 
         loadCartFromStorage();
         updateCartUI();
+        renderCategoryTabs();
+        setActiveCategory('all');
     </script>
 </body>
 </html>

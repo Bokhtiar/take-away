@@ -13,7 +13,8 @@ Route::get('/', function () {
     ])
         ->where('is_available', true)
         ->latest()
-        ->get();
+        ->paginate(9)
+        ->withQueryString();
 
     return view('welcome', compact('products'));
 });
