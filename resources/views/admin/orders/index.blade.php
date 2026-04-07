@@ -7,28 +7,38 @@
     <div class="space-y-6">
         <x-ui.page-header title="Orders" description="All orders, newest first. Use View to open full details." />
 
-        <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-wrap items-center gap-3">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by id, customer, phone"
-                class="h-11 w-64 px-4 text-sm border border-gray-300 rounded-xl bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-
-            <x-ui.select name="order_status" :options="[
-                '' => 'All Status',
-                'pending' => 'Pending',
-                'confirmed' => 'Confirmed',
-                'preparing' => 'Preparing',
-                'completed' => 'Completed',
-                'cancelled' => 'Cancelled',
-            ]" :value="request('order_status')" />
-
-            <x-ui.select name="payment_status" :options="[
-                '' => 'All Payment',
-                'unpaid' => 'Unpaid',
-                'paid' => 'Paid',
-                'refunded' => 'Refunded',
-            ]" :value="request('payment_status')" />
-
-            <x-ui.button type="submit" variant="secondary" size="md">Filter</x-ui.button>
-        </form>
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm">
+            <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-nowrap items-end gap-3 w-full min-w-0 overflow-x-auto pb-0.5">
+                <div class="flex-1 min-w-[12rem] max-w-xl shrink">
+                    <label for="orders-search" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Search</label>
+                    <input id="orders-search" type="text" name="search" value="{{ request('search') }}" placeholder="ID, name, phone…"
+                        class="h-11 w-full px-4 text-sm border border-gray-300 rounded-xl bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500">
+                </div>
+                <div class="w-44 shrink-0">
+                    <label for="order_status" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
+                    <x-ui.select name="order_status" :options="[
+                        '' => 'All Status',
+                        'pending' => 'Pending',
+                        'confirmed' => 'Confirmed',
+                        'preparing' => 'Preparing',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                    ]" :value="request('order_status')" class="h-11 rounded-xl py-0" />
+                </div>
+                <div class="w-44 shrink-0">
+                    <label for="payment_status" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Payment</label>
+                    <x-ui.select name="payment_status" :options="[
+                        '' => 'All Payment',
+                        'unpaid' => 'Unpaid',
+                        'paid' => 'Paid',
+                        'refunded' => 'Refunded',
+                    ]" :value="request('payment_status')" class="h-11 rounded-xl py-0" />
+                </div>
+                <div class="shrink-0">
+                    <x-ui.button type="submit" variant="primary" size="md" class="h-11 rounded-xl px-6">Filter</x-ui.button>
+                </div>
+            </form>
+        </div>
 
         <div class="bg-white dark:bg-gray-800 shadow-sm border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
             <div class="overflow-x-auto">
