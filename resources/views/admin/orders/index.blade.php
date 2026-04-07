@@ -5,7 +5,7 @@
 
 @section('admin-content')
     <div class="space-y-6">
-        <x-ui.page-header title="Orders" description="Manage customer orders from admin panel." />
+        <x-ui.page-header title="Orders" description="All orders, newest first. Use View to open full details." />
 
         <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-wrap items-center gap-3">
             <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by id, customer, phone"
@@ -36,17 +36,21 @@
                     <thead class="bg-gray-100">
                         <tr>
                             <th class="px-6 py-3 font-semibold text-left">Order</th>
+                            <th class="px-6 py-3 font-semibold text-left">Date</th>
                             <th class="px-6 py-3 font-semibold text-left">Customer</th>
                             <th class="px-6 py-3 font-semibold text-left">Status</th>
                             <th class="px-6 py-3 font-semibold text-left">Payment</th>
                             <th class="px-6 py-3 font-semibold text-left">Total</th>
-                            <th class="px-6 py-3 font-semibold text-left">Actions</th>
+                            <th class="px-6 py-3 font-semibold text-left">Action</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                         @forelse($orders as $order)
-                            <tr>
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition">
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">#{{ $order->id }}</td>
+                                <td class="px-6 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap text-sm">
+                                    {{ $order->created_at?->format('M d, Y h:i A') }}
+                                </td>
                                 <td class="px-6 py-4 text-gray-600 dark:text-gray-400">
                                     <div>{{ $order->customer_name }}</div>
                                     <div class="text-xs">{{ $order->customer_phone }}</div>
@@ -56,7 +60,9 @@
                                 <td class="px-6 py-4">${{ number_format((float) $order->total_amount, 2) }}</td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-2">
-                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="show-icon-button" title="View"><i class="ri-eye-line"></i></a>
+                                        <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50" title="View order">
+                                            <i class="ri-eye-line"></i> View
+                                        </a>
                                         <form method="POST" action="{{ route('admin.orders.destroy', $order->id) }}" class="inline" onsubmit="return confirm('Soft delete this order?')">
                                             @csrf
                                             @method('DELETE')
@@ -67,7 +73,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">No orders found</td>
+                                <td colspan="7" class="px-6 py-16 text-center text-gray-500 dark:text-gray-400">No orders found</td>
                             </tr>
                         @endforelse
                     </tbody>

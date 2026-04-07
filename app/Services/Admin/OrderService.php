@@ -33,7 +33,8 @@ class OrderService
             $query->where('payment_status', $paymentStatus);
         }
 
-        return $query->latest()
+        return $query->orderByDesc('created_at')
+            ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();
     }

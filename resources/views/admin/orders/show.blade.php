@@ -5,7 +5,12 @@
 
 @section('admin-content')
     <div class="space-y-6">
-        <x-ui.page-header title="Order #{{ $order->id }}" description="Review order items and update status." />
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <x-ui.page-header title="Order #{{ $order->id }}" description="Review order items and update status." />
+            <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                <i class="ri-arrow-left-line"></i> All orders
+            </a>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">

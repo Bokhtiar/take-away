@@ -115,6 +115,13 @@ class PermissionService
             }
         }
 
+        uksort($nestedMenus, function ($a, $b) use ($menusById) {
+            $orderA = $menusById[$a]['sort_order'] ?? 0;
+            $orderB = $menusById[$b]['sort_order'] ?? 0;
+
+            return $orderA <=> $orderB;
+        });
+
         return $nestedMenus;
     }
 

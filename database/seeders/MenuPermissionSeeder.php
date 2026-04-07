@@ -66,6 +66,20 @@ class MenuPermissionSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
+        // Orders — root menu (sidebar after Dashboard); URL matches Route::resource admin.orders
+        DB::table('admin_menus')->insert([
+            'id' => 17,
+            'name' => 'Orders',
+            'slug' => 'orders',
+            'icon' => 'ri-file-list-3-line',
+            'url' => '/admin/orders',
+            'parent_id' => null,
+            'sort_order' => 2,
+            'is_active' => true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
         // Role Permission (Root Menu)
         DB::table('admin_menus')->insert([
             'id' => 2,
@@ -74,7 +88,7 @@ class MenuPermissionSeeder extends Seeder
             'icon' => 'ri-shield-user-line',
             'url' => null,
             'parent_id' => null,
-            'sort_order' => 2,
+            'sort_order' => 3,
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -152,7 +166,7 @@ class MenuPermissionSeeder extends Seeder
             'icon' => 'ri-admin-line',
             'url' => null,
             'parent_id' => null,
-            'sort_order' => 3,
+            'sort_order' => 4,
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
@@ -191,7 +205,7 @@ class MenuPermissionSeeder extends Seeder
                 'icon' => 'ri-price-tag-3-line',
                 'url' => '/admin/categories',
                 'parent_id' => null,
-                'sort_order' => 4,
+                'sort_order' => 5,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -203,7 +217,7 @@ class MenuPermissionSeeder extends Seeder
                 'icon' => 'ri-shopping-bag-3-line',
                 'url' => '/admin/products',
                 'parent_id' => null,
-                'sort_order' => 5,
+                'sort_order' => 6,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -264,18 +278,6 @@ class MenuPermissionSeeder extends Seeder
                 'url' => '/admin/product-addons',
                 'parent_id' => 11,
                 'sort_order' => 5,
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => 17,
-                'name' => 'Orders',
-                'slug' => 'orders',
-                'icon' => 'ri-file-list-3-line',
-                'url' => '/admin/orders',
-                'parent_id' => null,
-                'sort_order' => 6,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -394,7 +396,7 @@ class MenuPermissionSeeder extends Seeder
             ['menu_id' => 15, 'permission_id' => $viewId],
             ['menu_id' => 15, 'permission_id' => $deleteId],
 
-            // Orders
+            // Orders — access + full action flags (same pattern as Categories; routes use index/show/update/destroy)
             ['menu_id' => 17, 'permission_id' => $accessId],
             ['menu_id' => 17, 'permission_id' => $createId],
             ['menu_id' => 17, 'permission_id' => $editId],
@@ -441,4 +443,3 @@ class MenuPermissionSeeder extends Seeder
         $this->command->info('🎉 Menu and Permission seeding completed successfully!');
     }
 }
-

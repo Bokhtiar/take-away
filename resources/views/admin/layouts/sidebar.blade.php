@@ -70,6 +70,29 @@
             </div>
         </a>
 
+        @if (can('orders.access'))
+            <a href="{{ route('admin.orders.index') }}"
+               @click="sidebarOpen = false"
+               :class="isExpanded ? '' : 'lg:justify-center lg:px-2'"
+               class="flex items-center px-3 lg:px-4 py-2.5 lg:py-3 text-sm lg:text-base text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group relative {{ request()->routeIs('admin.orders.*') ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium' : '' }}">
+                <i class="ri-file-list-3-line text-lg lg:text-xl flex-shrink-0" :class="isExpanded ? 'lg:mr-3' : ''"></i>
+                <span x-show="isExpanded || window.innerWidth < 1024" 
+                      x-transition:enter="transition-opacity duration-200"
+                      x-transition:enter-start="opacity-0"
+                      x-transition:enter-end="opacity-100"
+                      x-transition:leave="transition-opacity duration-100"
+                      x-transition:leave-start="opacity-100"
+                      x-transition:leave-end="opacity-0"
+                      class="whitespace-nowrap overflow-hidden">
+                    Orders
+                </span>
+                <div x-show="sidebarCollapsed && !sidebarHovered && window.innerWidth >= 1024" 
+                     class="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                    Orders
+                </div>
+            </a>
+        @endif
+
         <!-- Dynamic menus will be injected here by JavaScript -->
     </nav>
 
@@ -202,10 +225,14 @@
         const allowedMenus = filterMenusByPermission(rootMenus);
         console.log('✅ Allowed Menus (after filtering):', allowedMenus);
 
-        // Render only allowed menus
+        // Render only allowed menus (Orders is rendered server-side in Blade)
         let menusHTML = '';
         for (const menuId in allowedMenus) {
-            menusHTML += renderMenuItem(allowedMenus[menuId]);
+            const menu = allowedMenus[menuId];
+            if (menu.menu_slug === 'orders') {
+                continue;
+            }
+            menusHTML += renderMenuItem(menu);
         }
         
         console.log('📝 Generated HTML, length:', menusHTML.length);
