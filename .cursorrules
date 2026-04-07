@@ -1,0 +1,10 @@
+- STRICT: Response must be max 2-3 lines
+- If response exceeds 3 lines, rewrite it shorter
+- No explanation unless explicitly asked
+- Prioritize brevity over completeness
+- Give only the final answer unless user asks for details
+- Think efficiently and avoid overthinking
+- Do not add extra or unused code
+- If code is given, review and remove unused parts
+- Refactor and clean old code before updating
+- Prefer minimal, clean, and production-ready code

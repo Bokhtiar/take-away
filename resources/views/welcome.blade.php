@@ -1,143 +1,8 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>L'Oasis d'Or | Fine Dining & Luxury Cuisine</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@200..800&display=swap');
+@extends('users.layouts.app', ['variant' => 'landing'])
 
-        :root {
-            --gold: #D4AF37;
-            --soft-red: #A52A2A;
-            --black: #0A0A0A;
-        }
+@section('title', 'Take-Away | Fine Dining & Luxury Cuisine')
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--black);
-            color: #f5f5f5;
-        }
-
-        h1, h2, h3, .font-serif {
-            font-family: 'Playfair Display', serif;
-        }
-
-        .gold-text { color: var(--gold); }
-        .bg-gold { background-color: var(--gold); }
-        .border-gold { border-color: var(--gold); }
-        .text-soft-red { color: var(--soft-red); }
-
-        .glass-nav {
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .hero-gradient {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(10,10,10,1));
-        }
-
-        .food-card {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: #151515;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .food-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--gold);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
-        .cart-drawer {
-            transform: translateX(100%);
-            transition: transform 0.4s ease-in-out;
-        }
-
-        .cart-drawer.open {
-            transform: translateX(0);
-        }
-
-        .btn-luxury {
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .btn-luxury::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300%;
-            height: 300%;
-            background: rgba(255,255,255,0.1);
-            transition: all 0.5s ease;
-            transform: translate(-50%, -50%) scale(0);
-            border-radius: 50%;
-        }
-
-        .btn-luxury:hover::after {
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0a0a0a; }
-        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
-    </style>
-</head>
-<body class="overflow-x-hidden">
-
-    <nav class="fixed w-full z-50 glass-nav py-4 px-6 md:px-12 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <span class="text-2xl md:text-3xl font-serif gold-text font-bold tracking-widest uppercase">L'Oasis d'Or</span>
-        </div>
-        <div class="hidden md:flex gap-8 text-sm uppercase tracking-widest font-medium">
-            <a href="#home" class="hover:text-[var(--gold)] transition-colors">Home</a>
-            <a href="#menu" class="hover:text-[var(--gold)] transition-colors">Menu</a>
-            <a href="#chef" class="hover:text-[var(--gold)] transition-colors">The Kitchen</a>
-            <a href="#b2b" class="hover:text-[var(--gold)] transition-colors">Business</a>
-            <a href="#contact" class="hover:text-[var(--gold)] transition-colors">Contact</a>
-        </div>
-        <div class="flex items-center gap-4">
-            @auth
-                <div class="hidden md:flex items-center gap-3 border border-gold/40 bg-black/30 px-3 py-1.5 rounded-full">
-                    @php
-                        $avatarName = auth()->user()->name ?? 'User';
-                        $avatarUrl = data_get(auth()->user(), 'image_url') ?: ('https://ui-avatars.com/api/?name=' . urlencode($avatarName) . '&background=D4AF37&color=0A0A0A');
-                    @endphp
-                    <img src="{{ $avatarUrl }}" alt="avatar" class="w-9 h-9 rounded-full object-cover border border-gold/60">
-                    <span class="text-sm text-white font-medium">{{ $avatarName }}</span>
-                </div>
-                <a href="{{ route('orders.index') }}" class="hidden md:inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
-                    My Orders
-                </a>
-                <form method="POST" action="{{ route('user.logout') }}" class="hidden md:block">
-                    @csrf
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
-                        Logout
-                    </button>
-                </form>
-            @else
-                <a href="{{ route('user.login') }}" class="hidden md:inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
-                    Login
-                </a>
-                <a href="{{ route('user.register') }}" class="hidden md:inline-flex items-center px-4 py-2 border border-gold text-white text-xs uppercase tracking-widest hover:bg-gold hover:text-black transition-all">
-                    Register
-                </a>
-            @endauth
-            <button class="md:hidden text-2xl" onclick="toggleMobileMenu()">
-                <i class="fa-solid fa-bars-staggered"></i>
-            </button>
-        </div>
-    </nav>
-
+@section('content')
     <button onclick="toggleCart()"
         class="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-[90] w-14 h-14 rounded-full border border-gold/70 bg-black/80 backdrop-blur-md flex items-center justify-center hover:bg-gold hover:text-black transition-all group">
         <i class="fa-solid fa-utensils text-xl gold-text group-hover:text-black"></i>
@@ -327,13 +192,6 @@
         </div>
     </section>
 
-    <footer class="py-12 border-t border-white/5 px-6 md:px-12 text-center">
-        <div class="mb-8">
-            <span class="text-3xl font-serif gold-text tracking-widest uppercase">L'Oasis d'Or</span>
-        </div>
-        <p class="text-[10px] text-gray-600 uppercase tracking-[0.2em]">&copy; 2024 L'Oasis d'Or Collective. All Culinary Rights Reserved.</p>
-    </footer>
-
     <div id="cart-drawer" class="fixed top-0 right-0 w-full md:w-[400px] h-full bg-[#0d0d0d] z-[100] cart-drawer shadow-[-20px_0_50px_rgba(0,0,0,0.8)] flex flex-col">
         <div class="p-8 border-b border-white/5 flex justify-between items-center">
             <h3 class="font-serif text-2xl gold-text">Your Selection</h3>
@@ -387,6 +245,9 @@
         </div>
     </div>
 
+@endsection
+
+@push('scripts')
     <script>
         AOS.init({ duration: 1000, once: true, offset: 100 });
         const products = @json(method_exists($products, 'items') ? $products->items() : $products);
@@ -765,5 +626,4 @@
         renderCategoryTabs();
         setActiveCategory('all');
     </script>
-</body>
-</html>
+@endpush
