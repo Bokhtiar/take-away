@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class OrderUpdateRequest extends FormRequest
 {
@@ -14,9 +15,8 @@ class OrderUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_status' => ['required', 'string', 'max:50'],
-            'payment_status' => ['required', 'string', 'max:50'],
+            'order_status' => ['required', 'string', Rule::in(['pending', 'confirmed', 'preparing', 'completed', 'cancelled'])],
+            'payment_status' => ['required', 'string', Rule::in(['unpaid', 'paid', 'refunded'])],
         ];
     }
 }
-
