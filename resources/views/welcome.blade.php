@@ -446,12 +446,63 @@
             showToast(name + ' added');
         }
 
+        function removeCartLinesForProduct(productId) {
+            const pid = Number(productId);
+            cart = cart.filter((row) => Number(row.product_id) !== pid);
+        }
+
         function removeFromCart(cartIndex) {
-            cart.splice(cartIndex, 1);
+            const item = cart[cartIndex];
+            if (!item) return;
+            if (!item.isAddonOnly) {
+                removeCartLinesForProduct(item.product_id);
+            } else {
+                cart.splice(cartIndex, 1);
+            }
             updateCartUI();
         }
 
+        function changeCartQty(index, delta) {
+            const item = cart[index];
+            if (!item) return;
+            const cur = Number(item.qty || 0);
+            const next = cur + delta;
+            if (next <= 0) {
+                if (!item.isAddonOnly) {
+                    removeCartLinesForProduct(item.product_id);
+                } else {
+                    cart.splice(index, 1);
+                }
+                updateCartUI();
+                return;
+            }
+            item.qty = next;
+            updateCartUI();
+        }
+
+        function baseQtyByProduct() {
+            const m = {};
+            cart.forEach((row) => {
+                const pid = Number(row.product_id);
+                if (!row.isAddonOnly && pid > 0) {
+                    m[pid] = (m[pid] || 0) + Number(row.qty || 0);
+                }
+            });
+            return m;
+        }
+
+        function pruneOrphanAddonLines() {
+            const b = baseQtyByProduct();
+            cart = cart.filter((row) => {
+                if (!row.isAddonOnly) {
+                    return true;
+                }
+                return (b[Number(row.product_id)] || 0) > 0;
+            });
+        }
+
         function updateCartUI() {
+            pruneOrphanAddonLines();
             cartItemsContainer.innerHTML = '';
             let total = 0;
             let count = 0;
@@ -474,17 +525,22 @@
                         ? `<p class="text-[11px] text-gray-500">Addons: ${item.addons.map((a) => `${a.name} ($${Number(a.price).toFixed(2)})`).join(', ')}</p>`
                         : `<p class="text-[11px] text-gray-500">Addons: None</p>`;
                     const div = document.createElement('div');
-                    div.className = 'flex justify-between items-center';
+                    div.className = 'flex justify-between items-start gap-3 border-b border-white/5 pb-4 mb-4 last:border-0 last:pb-0 last:mb-0';
                     div.innerHTML = `
-                        <div>
+                        <div class="min-w-0 flex-1">
                             <h4 class="text-sm font-bold text-white uppercase tracking-wider">${titleWithAddons}</h4>
-                            <p class="text-xs gold-text">${item.qty} x $${unitTotal.toFixed(2)}</p>
+                            <p class="text-xs gold-text">${item.qty} × $${unitTotal.toFixed(2)}</p>
                             ${baseLine}
                             ${addonLine}
                         </div>
-                        <button onclick="removeFromCart(${index})" class="text-soft-red hover:text-white transition-all">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="changeCartQty(${index}, -1)" class="w-8 h-8 rounded border border-white/20 text-white hover:bg-white/10 text-sm font-bold leading-none" aria-label="Decrease quantity">−</button>
+                            <span class="w-7 text-center text-xs text-white font-semibold">${item.qty}</span>
+                            <button type="button" onclick="changeCartQty(${index}, 1)" class="w-8 h-8 rounded border border-white/20 text-white hover:bg-white/10 text-sm font-bold leading-none" aria-label="Increase quantity">+</button>
+                            <button type="button" onclick="removeFromCart(${index})" class="ml-1 text-soft-red hover:text-white transition-all p-1" aria-label="Remove line">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     `;
                     cartItemsContainer.appendChild(div);
                 });
@@ -517,8 +573,17 @@
                 return;
             }
 
+            const baseQ = baseQtyByProduct();
             const payloadItems = cart
                 .filter((item) => Number(item.product_id) > 0)
+                .filter((item) => Number(item.qty || 0) > 0)
+                .filter((item) => {
+                    const pid = Number(item.product_id);
+                    if (item.isAddonOnly) {
+                        return (baseQ[pid] || 0) > 0;
+                    }
+                    return true;
+                })
                 .map((item) => ({
                     product_id: Number(item.product_id),
                     qty: Number(item.qty || 1),
