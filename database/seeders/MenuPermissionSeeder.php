@@ -66,18 +66,45 @@ class MenuPermissionSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        // Orders — root menu (sidebar after Dashboard); URL matches Route::resource admin.orders
+        // Orders — parent (children: today + all)
         DB::table('admin_menus')->insert([
             'id' => 17,
             'name' => 'Orders',
             'slug' => 'orders',
             'icon' => 'ri-file-list-3-line',
-            'url' => '/admin/orders',
+            'url' => null,
             'parent_id' => null,
             'sort_order' => 2,
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),
+        ]);
+
+        DB::table('admin_menus')->insert([
+            [
+                'id' => 19,
+                'name' => 'Today\'s Orders',
+                'slug' => 'orders-today',
+                'icon' => 'ri-calendar-line',
+                'url' => '/admin/orders/today',
+                'parent_id' => 17,
+                'sort_order' => 1,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'id' => 20,
+                'name' => 'All Orders',
+                'slug' => 'orders-all',
+                'icon' => 'ri-list-check',
+                'url' => '/admin/orders',
+                'parent_id' => 17,
+                'sort_order' => 2,
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
 
         // Role Permission (Root Menu)
@@ -396,12 +423,22 @@ class MenuPermissionSeeder extends Seeder
             ['menu_id' => 15, 'permission_id' => $viewId],
             ['menu_id' => 15, 'permission_id' => $deleteId],
 
-            // Orders — access + full action flags (same pattern as Categories; routes use index/show/update/destroy)
+            // Orders (parent) + children — same actions as order routes (middleware: orders)
             ['menu_id' => 17, 'permission_id' => $accessId],
             ['menu_id' => 17, 'permission_id' => $createId],
             ['menu_id' => 17, 'permission_id' => $editId],
             ['menu_id' => 17, 'permission_id' => $viewId],
             ['menu_id' => 17, 'permission_id' => $deleteId],
+            ['menu_id' => 19, 'permission_id' => $accessId],
+            ['menu_id' => 19, 'permission_id' => $createId],
+            ['menu_id' => 19, 'permission_id' => $editId],
+            ['menu_id' => 19, 'permission_id' => $viewId],
+            ['menu_id' => 19, 'permission_id' => $deleteId],
+            ['menu_id' => 20, 'permission_id' => $accessId],
+            ['menu_id' => 20, 'permission_id' => $createId],
+            ['menu_id' => 20, 'permission_id' => $editId],
+            ['menu_id' => 20, 'permission_id' => $viewId],
+            ['menu_id' => 20, 'permission_id' => $deleteId],
         ];
 
         foreach ($menuPermissions as $mp) {

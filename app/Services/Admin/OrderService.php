@@ -11,11 +11,16 @@ class OrderService
         int $perPage = 10,
         ?string $search = null,
         ?string $status = null,
-        ?string $paymentStatus = null
+        ?string $paymentStatus = null,
+        ?string $date = null,
     ): LengthAwarePaginator {
         $query = Order::query()
             ->with('user')
             ->where('soft_delete', false);
+
+        if ($date !== null && $date !== '') {
+            $query->whereDate('created_at', $date);
+        }
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -64,4 +69,3 @@ class OrderService
         return $order->fresh();
     }
 }
-

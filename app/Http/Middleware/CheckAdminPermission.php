@@ -10,7 +10,7 @@ class CheckAdminPermission
 {
     public function handle(Request $request, Closure $next, string $menuSlug): Response
     {
-        if (!session('admin_id')) {
+        if (! session('admin_id')) {
             return redirect()->route('admin.login')->with('error', 'Please login first');
         }
 
@@ -19,16 +19,17 @@ class CheckAdminPermission
 
         /**
          * Map Laravel method names to permission slugs
-         * 
+         *
          * Why needed?
          * - Laravel uses: store(), update(), destroy() (technical names)
          * - DB has: create, edit, delete (user-friendly names)
-         * 
+         *
          * Only Laravel standard methods need mapping.
          * Custom methods (updateBulk, assign, etc.) match directly with DB permissions.
          */
         $actionMap = [
             'index' => 'access',       // GET list page -> access permission
+            'today' => 'access',       // GET today orders list
             'assign' => 'access',      // Custom role assignment page -> access permission
             'show' => 'view',          // GET single record page -> view permission
             'store' => 'create',      // POST request → create permission
@@ -41,11 +42,10 @@ class CheckAdminPermission
         $permission = $actionMap[$action] ?? $action;
 
         // Check if user has permission (from session)
-        if (!can("{$menuSlug}.{$permission}")) {
+        if (! can("{$menuSlug}.{$permission}")) {
             abort(403, 'Unauthorized');
         }
 
         return $next($request);
     }
 }
-

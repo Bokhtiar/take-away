@@ -1,14 +1,41 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Orders')
-@section('page-title', 'Orders')
+@php
+    $filterDate = $filterDate ?? null;
+    $ordersFormAction = isset($filterDate) ? route('admin.orders.today') : route('admin.orders.index');
+@endphp
+
+@section('title')
+    {{ isset($filterDate) ? "Today's orders" : 'All orders' }}
+@endsection
+
+@section('page-title')
+    {{ isset($filterDate) ? "Today's orders" : 'All orders' }}
+@endsection
 
 @section('admin-content')
     <div class="space-y-6" x-data="{ csrf: '{{ csrf_token() }}' }">
-        <x-ui.page-header title="Orders" description="Newest first. Toggle complete (Completed / Pending) and payment (Paid / Unpaid) per row." />
+        <x-ui.page-header
+            :title="isset($filterDate) ? 'Today\'s orders' : 'All orders'"
+            :description="isset($filterDate)
+                ? 'Orders for the selected date (defaults to today). Change the date and apply filters as needed.'
+                : 'All orders, newest first. Toggle complete (Completed / Pending) and payment (Paid / Unpaid) per row.'"
+        />
 
         <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm">
-            <form method="GET" action="{{ route('admin.orders.index') }}" class="flex flex-nowrap items-end gap-3 w-full min-w-0 overflow-x-auto pb-0.5">
+            <form method="GET" action="{{ $ordersFormAction }}" class="flex flex-nowrap items-end gap-3 w-full min-w-0 overflow-x-auto pb-0.5">
+                @if (isset($filterDate))
+                    <div class="w-44 shrink-0">
+                        <label for="filter-date" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Date</label>
+                        <input
+                            type="date"
+                            name="date"
+                            id="filter-date"
+                            value="{{ $filterDate }}"
+                            class="h-11 w-full px-3 text-sm border border-gray-300 rounded-xl bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                        >
+                    </div>
+                @endif
                 <div class="flex-1 min-w-[12rem] max-w-xl shrink">
                     <label for="orders-search" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Search</label>
                     <input id="orders-search" type="text" name="search" value="{{ request('search') }}" placeholder="ID, name, phone…"

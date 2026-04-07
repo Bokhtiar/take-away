@@ -13,7 +13,7 @@ Route::post('logout', [AuthController::class, 'logout'])->name('admin.logout');
 Route::get('dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
 /** debug permissions */
-Route::get('debug-permissions', function() {
+Route::get('debug-permissions', function () {
     return [
         'admin_id' => session('admin_id'),
         'admin_permissions' => session('admin_permissions'),
@@ -21,7 +21,7 @@ Route::get('debug-permissions', function() {
             'admin-roles.sidebar-menu' => can('admin-roles.sidebar-menu'),
             'admins.create' => can('admins.create'),
             'admins.view' => can('admins.view'),
-        ]
+        ],
     ];
 })->name('admin.debug-permissions');
 
@@ -39,23 +39,23 @@ Route::resource('admin-permissions', \App\Http\Controllers\Admin\AdminPermission
 Route::put('admin-menu-permissions/update-bulk', [\App\Http\Controllers\Admin\AdminMenuPermissionController::class, 'updateBulk'])
     ->name('admin.admin-menu-permissions.update-bulk')
     ->middleware('admin.check.permission:menu-permissions');
-    
+
 Route::resource('admin-menu-permissions', \App\Http\Controllers\Admin\AdminMenuPermissionController::class)
-    ->names('admin.admin-menu-permissions')
-    ->middleware('admin.check.permission:menu-permissions');
+        ->names('admin.admin-menu-permissions')
+        ->middleware('admin.check.permission:menu-permissions');
 
 /** admin role menu permissions */
 Route::put('admin-role-menu-permissions/update-bulk', [\App\Http\Controllers\Admin\AdminRoleMenuPermissionController::class, 'updateBulk'])
     ->name('admin.admin-role-menu-permissions.update-bulk')
     ->middleware('admin.check.permission:role-menu-permissions');
-    
+
 Route::get('admin-role-menu-permissions/assign/{roleId?}', [\App\Http\Controllers\Admin\AdminRoleMenuPermissionController::class, 'assign'])
-    ->name('admin.admin-role-menu-permissions.assign')
-    ->middleware('admin.check.permission:role-menu-permissions');
-    
+        ->name('admin.admin-role-menu-permissions.assign')
+        ->middleware('admin.check.permission:role-menu-permissions');
+
 Route::resource('admin-role-menu-permissions', \App\Http\Controllers\Admin\AdminRoleMenuPermissionController::class)
-    ->names('admin.admin-role-menu-permissions')
-    ->middleware('admin.check.permission:role-menu-permissions');
+        ->names('admin.admin-role-menu-permissions')
+        ->middleware('admin.check.permission:role-menu-permissions');
 
 /** admin menus */
 Route::resource('admin-menus', \App\Http\Controllers\Admin\AdminMenuController::class)
@@ -108,9 +108,12 @@ Route::post('product-addons', [\App\Http\Controllers\Admin\ProductAddonControlle
     ->name('admin.product-addons.store')
     ->middleware('admin.check.permission:product-addons');
 
-/** orders */
+/** orders (today route must be before resource {order}) */
+Route::get('orders/today', [\App\Http\Controllers\Admin\OrderController::class, 'today'])
+    ->name('admin.orders.today')
+    ->middleware('admin.check.permission:orders');
+
 Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)
     ->only(['index', 'show', 'update', 'destroy'])
     ->names('admin.orders')
     ->middleware('admin.check.permission:orders');
-

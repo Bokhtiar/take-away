@@ -75,8 +75,8 @@
     >
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <x-ui.page-header title="Order #{{ $order->id }}" description="Tap a status to save immediately." />
-            <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                <i class="ri-arrow-left-line"></i> All orders
+            <a href="{{ route('admin.orders.today') }}" class="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                <i class="ri-arrow-left-line"></i> Orders
             </a>
         </div>
 
