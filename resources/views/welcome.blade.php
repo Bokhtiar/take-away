@@ -357,9 +357,28 @@
             const existing = cart.find((item) => getItemSignature(item) === signature);
             if (existing) {
                 existing.qty += newItem.qty;
+                if (!existing.product_id && newItem.product_id) {
+                    existing.product_id = newItem.product_id;
+                }
             } else {
                 cart.push(newItem);
             }
+        }
+
+        function ensureBaseProductLine(product) {
+            const pid = Number(product.id);
+            const hasBase = cart.some(
+                (item) => Number(item.product_id) === pid && !item.isAddonOnly
+            );
+            if (hasBase) return;
+            upsertCartItem({
+                product_id: pid,
+                name: product.name,
+                price: Number(product.price),
+                qty: 1,
+                addons: [],
+                isAddonOnly: false,
+            });
         }
 
         function migrateLegacyCartItems() {
@@ -370,13 +389,16 @@
                 const qty = Number(item.qty || 1);
                 const basePrice = Number(item.price || 0);
                 const addons = Array.isArray(item.addons) ? item.addons : [];
+                const productId = Number(item.product_id);
+                const pid = Number.isFinite(productId) && productId > 0 ? productId : 0;
 
-                if (addons.length && !item.isAddonOnly) {
+                if (addons.length && item.isAddonOnly === false) {
                     const addonTotal = addons.reduce((sum, addon) => sum + Number(addon.price || 0), 0);
-                    upsertIntoList(migrated, { name: item.name, price: basePrice, qty, addons: [], isAddonOnly: false });
-                    upsertIntoList(migrated, { name: item.name, price: addonTotal, qty, addons, isAddonOnly: true });
+                    upsertIntoList(migrated, { product_id: pid, name: item.name, price: basePrice, qty, addons: [], isAddonOnly: false });
+                    upsertIntoList(migrated, { product_id: pid, name: item.name, price: addonTotal, qty, addons, isAddonOnly: true });
                 } else {
                     upsertIntoList(migrated, {
+                        product_id: pid,
                         name: item.name,
                         price: basePrice,
                         qty,
@@ -387,6 +409,7 @@
             });
 
             cart = migrated;
+            saveCartToStorage();
         }
 
         function upsertIntoList(list, newItem) {
@@ -398,8 +421,14 @@
                 return itemSignature === signature;
             });
 
-            if (existing) existing.qty += newItem.qty;
-            else list.push(newItem);
+            if (existing) {
+                existing.qty += newItem.qty;
+                if (!existing.product_id && newItem.product_id) {
+                    existing.product_id = newItem.product_id;
+                }
+            } else {
+                list.push(newItem);
+            }
         }
 
         function addToCart(productId, name, price, addons = []) {
@@ -606,8 +635,15 @@
         }
 
         function addProductWithAddon(productId, addonId, addonName, addonPrice) {
-            const product = products.find((p) => p.id === productId);
+            const product = products.find((p) => Number(p.id) === Number(productId));
             if (!product) return;
+
+            ensureBaseProductLine(product);
+
+            const aid = addonId !== null && addonId !== undefined && String(addonId).trim() !== ''
+                && !Number.isNaN(Number(addonId))
+                ? Number(addonId)
+                : addonId;
 
             upsertCartItem({
                 product_id: Number(product.id),
@@ -615,7 +651,7 @@
                 price: Number(addonPrice),
                 qty: 1,
                 addons: [{
-                    id: addonId,
+                    id: aid,
                     name: addonName,
                     price: Number(addonPrice),
                 }],
