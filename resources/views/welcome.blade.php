@@ -57,9 +57,18 @@
                             <h3 class="text-xl font-serif">{{ $product->name }}</h3>
                             <span class="gold-text font-bold">${{ number_format((float) $product->price, 2) }}</span>
                         </div>
-                        <p class="text-gray-400 text-sm mb-6">{{ \Illuminate\Support\Str::limit($product->description ?: 'A delightful dish curated by our chef.', 120) }}</p>
+                        <p class="text-gray-400 text-sm mb-4">{{ \Illuminate\Support\Str::limit($product->description ?: 'A delightful dish curated by our chef.', 120) }}</p>
+                        @if ($product->productAddons->isNotEmpty())
+                            @php $addonCount = $product->productAddons->count(); @endphp
+                            <button type="button"
+                                onclick="openProductModal({{ $product->id }})"
+                                class="mb-4 w-full inline-flex items-center justify-center gap-2 rounded-lg border border-gold/30 bg-gold/5 px-3 py-2 text-xs font-semibold uppercase tracking-widest text-gold transition hover:bg-gold/15 hover:border-gold/50 focus:outline-none focus:ring-2 focus:ring-gold/40">
+                                <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+                                <span>{{ $addonCount }} add-on{{ $addonCount === 1 ? '' : 's' }}</span>
+                            </button>
+                        @endif
                         <div class="grid grid-cols-2 gap-2">
-                            <button onclick="openProductModal({{ $product->id }})" class="py-3 bg-white/5 border border-white/10 hover:border-gold transition-all text-xs font-bold uppercase tracking-widest">
+                            <button type="button" onclick="openProductModal({{ $product->id }})" class="py-3 bg-white/5 border border-white/10 hover:border-gold transition-all text-xs font-bold uppercase tracking-widest">
                                 Details
                             </button>
                             <button onclick="addToCart({{ $product->id }}, '{{ addslashes($product->name) }}', {{ (float) $product->price }})" class="py-3 bg-white/5 border border-white/10 hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest">
